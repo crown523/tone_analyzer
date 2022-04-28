@@ -1,4 +1,4 @@
-# fangyan_tones
+# Tone_Analyzer
 
 Tool to analyze song lyrics and output the distribution of tones in line endings
 
