@@ -1,17 +1,8 @@
 # fangyan_tones
 
-Repo for the study of tonal composition of chinese music, specifically rap
-
+Tool to analyze song lyrics and output the distribution of tones in line endings
 
 To setup the project, run 
-```pip install .``` or ``` pip install -e .``` for an editable version
+```pip install .```
 
-You should then be able to run chinese_to_pinyin_demo.py in scripts to pass in chinese text
-
-After passing in the song lyrics, by inputting "Analyze" you can output the Tone table for the line endings.
-
-In order to download wavs using download_wavs.py, you must be on a debian based os or MacOS.
-
-On debian, install ```sudo apt install ffmpeg```.
-
-Otherwise on MacOS, ```brew install ffmpeg```
+You can then run tone_analyzer/tone_analyzer_app.py to use the tool.
