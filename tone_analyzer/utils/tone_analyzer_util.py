@@ -35,6 +35,59 @@ def create_table(line_endings_by_verse):
     rows.append(percents)
     return rows
 
+def separate_verses(lyrics):
+    def find_chorus(lines):
+        # for each line
+        # look for any matches in the remaining lines
+        # write down the line number of every "base"
+        # if there's no matches, we're done
+        # else, for each base
+        # extend by 1 line, then look for matches
+        # the longest match is our chorus
+
+        done = False
+        while not done:
+            done = True
+            matches = []
+            for i in range(len(lines)):
+                base = lines[i]
+                for j in range(i + 1, len(lines)):
+                    if base == lines[j] and base not in matches:
+                        #match found
+                        print(base)
+                        print(lines[j])
+                        done = False
+                        matches.append(i)
+            length = 2
+            change_made = True
+            print(matches)
+            while(len(matches) > 1 and change_made):
+                change_made = False
+                new_matches = []
+                for line_num in matches:
+                    to_match = lines[line_num:line_num + length]
+                    for i in range(line_num + length, len(lines), length):
+                        if to_match == lines[i:i + length]:
+                            print(to_match)
+                            print(lines[i:i + length])
+                            new_matches.append(line_num)
+                            change_made = True
+                matches = new_matches
+                length += 1
+            return (matches[i], length)
+                  
+    verses = []
+    lines = lyrics.splitlines()
+
+    start, length = find_chorus(lines)
+    for i in range(start, start + length):
+        print(lines[i])
+
+    # for line in lines:
+
+    #     print(line)
+    return verses
+
 def load_and_convert():
     curPinyin = []
     line_endings_by_verse = []
