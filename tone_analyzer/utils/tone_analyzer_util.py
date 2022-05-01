@@ -60,26 +60,32 @@ def separate_verses(lyrics):
                         matches.append(i)
             length = 2
             change_made = True
+            matched_length = 2
             print(matches)
             while(len(matches) > 1 and change_made):
                 change_made = False
                 new_matches = []
                 for line_num in matches:
                     to_match = lines[line_num:line_num + length]
-                    for i in range(line_num + length, len(lines), length):
-                        if to_match == lines[i:i + length]:
-                            print(to_match)
-                            print(lines[i:i + length])
+                    for i in range(line_num + length, len(lines)):
+                        print(to_match)
+                        print(lines[i:i + length])
+                        if to_match == lines[i:i + length] and line_num not in new_matches:
+                            print("match!")
                             new_matches.append(line_num)
                             change_made = True
-                matches = new_matches
+                if change_made:
+                    matches = new_matches
+                    matched_length = length
+                print(matches)
                 length += 1
-            return (matches[i], length)
+            return (matches[0], matched_length)
                   
     verses = []
     lines = lyrics.splitlines()
 
     start, length = find_chorus(lines)
+    print("Chorus found:")
     for i in range(start, start + length):
         print(lines[i])
 
