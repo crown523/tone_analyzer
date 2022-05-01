@@ -1,3 +1,5 @@
+from cmath import inf
+from nis import match
 from utils.pinyin_utils import (
     chars_to_pinyin,
     char_to_pinyin
@@ -79,15 +81,75 @@ def separate_verses(lyrics):
                     matched_length = length
                 print(matches)
                 length += 1
-            return (matches[0], matched_length)
-                  
+            starting_lines = [matches[0]]
+            for i in range(matches[0] + 1, len(lines)):
+                if lines[i:i+matched_length] == lines[starting_lines[0]:starting_lines[0]+matched_length]:
+                    starting_lines.append(i)
+            return (starting_lines, matched_length)
+
+    # what if no chorus found?
+    # just use whole song as 1 verse
+
+    # what if whole song is chorus?
+    # how to check?
+
     verses = []
     lines = lyrics.splitlines()
 
-    start, length = find_chorus(lines)
-    print("Chorus found:")
-    for i in range(start, start + length):
-        print(lines[i])
+    chorus_starting_lines, length = find_chorus(lines)
+    # print("Chorus found:")
+    # for i in range(len(lines)):
+    #     if i > 0:
+    #         verses.append(lines[0:])
+
+    #     for i in range(linenum, linenum + length):
+    #         print(lines[i])
+
+    verse_start_lines = []
+    for linenum in chorus_starting_lines:
+        verse_start_lines.append(linenum)
+        if linenum + length != len(lines):
+            verse_start_lines.append(linenum + length)
+    
+    if 0 not in verse_start_lines:
+        verse_start_lines = [0] + verse_start_lines
+
+    flag = False
+    verse_info = []
+    for i in range(len(verse_start_lines)):
+        if i == len(verse_start_lines) - 1:
+            length = len(verse_start_lines) - verse_start_lines[i]
+        else:
+            length = verse_start_lines[i+1] - verse_start_lines[i]
+        verse_info.append((verse_start_lines[i], length))
+    final_verse_info = []
+    temp = []
+    for info in verse_info:
+        if info[0] in chorus_starting_lines:
+            if not flag:
+                temp = info
+                flag = True
+        else:
+            final_verse_info.append(info)
+    final_verse_info.append(temp)
+     
+    # make verse array
+    for info in final_verse_info:
+        verses.append(lines[info[0]:info[0]+info[1]])
+
+    # for i in range(len(verse_start_lines)):
+    #     if i == len(verse_start_lines) - 1:
+    #         verses.append(lines[verse_start_lines[i]:len(lines)])
+    #     else:
+    #         verses.append(lines[verse_start_lines[i]:verse_start_lines[i+1]])
+    
+    i = 0
+    for verse in verses:
+        i += 1
+        print(i)
+        for line in verse:
+            print(line)
+        
 
     # for line in lines:
 
