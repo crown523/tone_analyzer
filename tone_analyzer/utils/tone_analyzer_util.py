@@ -1,8 +1,13 @@
-from cmath import inf
-from nis import match
 from utils.pinyin_utils import (
     chars_to_pinyin,
     char_to_pinyin
+)
+
+from utils.preprocess import (
+    filter_chinese_specific_punctuation,
+    filter_english_text,
+    filter_general_punctuation,
+    filter_all_non_chinese_text
 )
 
 from utils.table_generator import generate
@@ -87,24 +92,18 @@ def separate_verses(lyrics):
                     starting_lines.append(i)
             return (starting_lines, matched_length)
 
+    verses = []
+    lines = lyrics.splitlines()
+
+    chorus_starting_lines, length = find_chorus(lines)
+
     # what if no chorus found?
     # just use whole song as 1 verse
 
     # what if whole song is chorus?
     # how to check?
-
-    verses = []
-    lines = lyrics.splitlines()
-
-    chorus_starting_lines, length = find_chorus(lines)
-    # print("Chorus found:")
-    # for i in range(len(lines)):
-    #     if i > 0:
-    #         verses.append(lines[0:])
-
-    #     for i in range(linenum, linenum + length):
-    #         print(lines[i])
-
+    
+    # normal case
     verse_start_lines = []
     for linenum in chorus_starting_lines:
         verse_start_lines.append(linenum)
@@ -137,12 +136,7 @@ def separate_verses(lyrics):
     for info in final_verse_info:
         verses.append(lines[info[0]:info[0]+info[1]])
 
-    # for i in range(len(verse_start_lines)):
-    #     if i == len(verse_start_lines) - 1:
-    #         verses.append(lines[verse_start_lines[i]:len(lines)])
-    #     else:
-    #         verses.append(lines[verse_start_lines[i]:verse_start_lines[i+1]])
-    
+    # print
     i = 0
     for verse in verses:
         i += 1
@@ -156,7 +150,68 @@ def separate_verses(lyrics):
     #     print(line)
     return verses
 
-def load_and_convert():
+def load_and_convert(verses, song_info):
+    print('automatic')
+    curPinyin = []
+    line_endings_by_verse = []
+
+    # standard form
+    num_verses = len(verses) - 1
+    for i in range(num_verses):
+        line_endings_this_verse = []
+        
+        for line in verses[i]:
+            cleaned_input = filter_chinese_specific_punctuation(line)
+            pinyin = chars_to_pinyin(cleaned_input, 2, as_list=True)
+            curPinyin += pinyin
+            if pinyin:
+                line_endings_this_verse.append(pinyin[-1])
+        
+        line_endings_by_verse.append(line_endings_this_verse)
+        # print(line_endings_by_verse)
+
+    print("Enter lyrics for chorus/hook, and Analyze when done:")
+
+    line_endings_this_verse = []
+    artist, title, year = song_info
+    for line in verses[-1]:
+        cleaned_input = filter_chinese_specific_punctuation(line)
+        pinyin = chars_to_pinyin(cleaned_input, 2, as_list=True)
+        curPinyin += pinyin
+        if pinyin:
+            line_endings_this_verse.append(pinyin[-1])
+
+    line_endings_by_verse.append(line_endings_this_verse)
+    # print(line_endings_by_verse)
+    params = "%s-%s-%s" % (artist, title, year)
+    # print(create_table(line_endings))
+    table = create_table(line_endings_by_verse)
+    col_heads = ['1', '2', '3', '4', 'Neutral 1', 'Neutral 2', 'English', 'Falling Contours', 'Total']
+    data = [
+        col_heads
+    ]
+    for i in range(len(table)):
+        new_row = list(table[i].values())
+        print(new_row)
+        # print(new_row)
+        if i + 1 == len(table):
+            new_row = ["Percentages"] + new_row
+        elif i + 2 == len(table):
+            new_row = ["Total"] + new_row
+        elif i + 3 == len(table):
+            new_row = ["Hook"] + new_row
+        else:
+            name = "Verse " + str((i+1))
+            new_row = [name] + new_row
+        data.append(new_row)
+        # for (key, value) in row.items():
+        #     row.append(value)
+        # data.append(row)
+    
+    generate(params, data)
+
+def manual_load_and_convert():
+    print('manual')
     curPinyin = []
     line_endings_by_verse = []
     # generate("", [])
