@@ -14,8 +14,26 @@ def main():
     header = tk.Label(text="Tone Analyzer")
     header.pack()
 
+    main_frame = tk.Frame()
+
     # widget defs for automatic analyze
     automatic_analysis_frame = tk.Frame()
+
+    def go_home():
+        automatic_analysis_frame.pack_forget()
+        song_info_frame.pack_forget()
+        main_frame.pack()
+
+    homeButton = tk.Button(
+        master=automatic_analysis_frame,
+        text="Home",
+        width=25,
+        height=5,
+        bg="blue",
+        fg="black",
+        command=lambda: go_home()
+    )
+    homeButton.pack()
 
     lyricEntryLabel = tk.Label(master=automatic_analysis_frame, text="Enter Lyrics")
     lyricEntryLabel.pack()
@@ -42,12 +60,16 @@ def main():
     song_info_frame.pack()
     song_info_frame.pack_forget()
 
-    def handle_submit(event):
+    def handle_submit():
         lyrics = lyricEntry.get("1.0", tk.END)
+        lyricEntry.delete("1.0", tk.END)
         # print(text)
         artist = artistNameEntry.get()
+        artistNameEntry.delete(0, tk.END)
         song = songNameEntry.get()
+        songNameEntry.delete(0, tk.END)
         year = songYearEntry.get()
+        songYearEntry.delete(0, tk.END)
 
         verses = separate_verses(lyrics)
         load_and_convert(verses, (artist, song, year))
@@ -61,8 +83,9 @@ def main():
         height=5,
         bg="blue",
         fg="black",
+        command=lambda: handle_submit()
     )
-    submitButton.bind("<Button-1>", handle_submit)
+    # submitButton.bind("<Button-1>", handle_submit())
     submitButton.pack()
 
     automatic_analysis_frame.pack()
@@ -90,24 +113,36 @@ def main():
         print('gg')
         global cur_step
         global num_verses
+        num_verses += 1
 
         print(cur_step)
         
         nextButton.pack_forget()
         if cur_step == 0:
             num_verses = int(numVersesEntry.get())
+            numVersesEntry.delete(0, tk.END)
             numVersesLabel.pack_forget()
             numVersesEntry.pack_forget()
             verse_entry_frame.pack()
             cur_step += 1
         else:
             if cur_step == num_verses - 1:
+                lyricEntryLabel2.config(text="Enter Hook")
+                nextButton['text'] = 'Analyze'
                 song_info_frame.pack()
+                lyrics = lyricEntry2.get("1.0", tk.END)
+                lyricEntry2.delete("1.0", tk.END)
+                lines = lyrics.splitlines()
+                verses.append(lines)
+                print(verses)
             elif cur_step == num_verses:
                 # pass to analyzer
                 artist = artistNameEntry.get()
+                artistNameEntry.delete(0, tk.END)
                 song = songNameEntry.get()
+                songNameEntry.delete(0, tk.END)
                 year = songYearEntry.get()
+                songYearEntry.delete(0, tk.END)
 
                 load_and_convert(verses, (artist, song, year))
                 manual_analysis_frame.pack_forget()
@@ -115,6 +150,7 @@ def main():
                 main_frame.pack()
             else:
                 lyrics = lyricEntry2.get("1.0", tk.END)
+                lyricEntry2.delete("1.0", tk.END)
                 lines = lyrics.splitlines()
                 verses.append(lines)
                 print(verses)
@@ -136,7 +172,6 @@ def main():
     manual_analysis_frame.pack_forget()
 
     # starting screen widget defs
-    main_frame = tk.Frame()
 
     def handle_automatic_analyze():
         automatic_analysis_frame.pack()
