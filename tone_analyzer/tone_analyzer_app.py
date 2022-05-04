@@ -98,6 +98,8 @@ def main():
     numVersesEntry = tk.Entry(master=manual_analysis_frame)
     numVersesLabel.pack()
     numVersesEntry.pack()
+    numVersesLabel.pack_forget()
+    numVersesEntry.pack_forget()
 
     verse_entry_frame = tk.Frame(master=manual_analysis_frame)
 
@@ -113,19 +115,19 @@ def main():
         print('gg')
         global cur_step
         global num_verses
-        num_verses += 1
-
-        print(cur_step)
         
         nextButton.pack_forget()
         if cur_step == 0:
-            num_verses = int(numVersesEntry.get())
+            num_verses = int(numVersesEntry.get()) + 1
+            print(num_verses)
             numVersesEntry.delete(0, tk.END)
             numVersesLabel.pack_forget()
             numVersesEntry.pack_forget()
             verse_entry_frame.pack()
             cur_step += 1
         else:
+            print(cur_step)
+            print(num_verses)
             if cur_step == num_verses - 1:
                 lyricEntryLabel2.config(text="Enter Hook")
                 nextButton['text'] = 'Analyze'
@@ -144,9 +146,17 @@ def main():
                 year = songYearEntry.get()
                 songYearEntry.delete(0, tk.END)
 
+                #reset some stuff
+                cur_step = -1
+                nextButton['text'] = 'Next'
+
+                print(len(verses))
+                if len(verses) < num_verses:
+                    verses.append([])
                 load_and_convert(verses, (artist, song, year))
                 manual_analysis_frame.pack_forget()
                 song_info_frame.pack_forget()
+                verse_entry_frame.pack_forget()
                 main_frame.pack()
             else:
                 lyrics = lyricEntry2.get("1.0", tk.END)
@@ -191,6 +201,8 @@ def main():
 
     def handle_manual_analyze():
         manual_analysis_frame.pack()
+        numVersesLabel.pack()
+        numVersesEntry.pack()
         main_frame.pack_forget()
 
     button2 = tk.Button(

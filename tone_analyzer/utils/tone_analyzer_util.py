@@ -61,30 +61,30 @@ def separate_verses(lyrics):
                 for j in range(i + 1, len(lines)):
                     if base == lines[j] and base not in matches:
                         #match found
-                        print(base)
-                        print(lines[j])
+                        # print(base)
+                        # print(lines[j])
                         done = False
                         matches.append(i)
             length = 2
             change_made = True
             matched_length = 2
-            print(matches)
+            # print(matches)
             while(len(matches) > 1 and change_made):
                 change_made = False
                 new_matches = []
                 for line_num in matches:
                     to_match = lines[line_num:line_num + length]
                     for i in range(line_num + length, len(lines)):
-                        print(to_match)
+                        # print(to_match)
                         print(lines[i:i + length])
                         if to_match == lines[i:i + length] and line_num not in new_matches:
-                            print("match!")
+                            # print("match!")
                             new_matches.append(line_num)
                             change_made = True
                 if change_made:
                     matches = new_matches
                     matched_length = length
-                print(matches)
+                # print(matches)
                 length += 1
             starting_lines = [matches[0]]
             for i in range(matches[0] + 1, len(lines)):
@@ -117,12 +117,13 @@ def separate_verses(lyrics):
     verse_info = []
     for i in range(len(verse_start_lines)):
         if i == len(verse_start_lines) - 1:
-            length = len(verse_start_lines) - verse_start_lines[i]
+            length = len(lines) - verse_start_lines[i]
         else:
             length = verse_start_lines[i+1] - verse_start_lines[i]
         verse_info.append((verse_start_lines[i], length))
     final_verse_info = []
     temp = []
+    print(verse_info)
     for info in verse_info:
         if info[0] in chorus_starting_lines:
             if not flag:
@@ -131,7 +132,7 @@ def separate_verses(lyrics):
         else:
             final_verse_info.append(info)
     final_verse_info.append(temp)
-     
+    print(final_verse_info)
     # make verse array
     for info in final_verse_info:
         verses.append(lines[info[0]:info[0]+info[1]])
